@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body { background: #0a1020; color: #e6edf7; font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; }
+:focus-visible { outline: 2px solid #38d0f0; outline-offset: 2px; }
+input[type="range"] { accent-color: #38d0f0; width: 100%; }
+audio { width: 100%; }

@@ -1,94 +1,56 @@
-# 🛡️ VoxShield: Audio Noise Reduction Prototype
+# VoxShield
 
-> **"Every word heard, even in the loudest moments."**
+> Every word heard, even in the loudest moments.
 
-VoxShield is an AI/DSP audio noise reduction prototype designed for emergency responders (firefighters, disaster rescue, police, ambulances) and tactical communications operating in extreme acoustic noise (helicopter rotors, heavy machinery, sirens, and gunfire).
+VoxShield is a student hackathon prototype for improving speech clarity in noisy recordings, aimed at emergency responders, rescue teams, firefighters and police. It runs entirely in the browser: no backend, database, API keys or paid services.
 
-This repository contains the minimal working hackathon prototype developed for **MY Bharat Hack for Social Cause** (*Disaster Mitigation & Resilience*) and the **Wadhwani Entrepreneurship Programme**.
+**Status:** early prototype. It is a signal-processing baseline, **not** a trained AI model. It has not been validated for emergency, military or field use.
 
----
+## The problem
+Radio and recorded speech in sirens, engines, wind and crowds can be hard to understand. VoxShield demonstrates the workflow: load noisy speech, enhance it, compare before and after.
 
-## 📌 Features
+## How it works
+1. Audio is uploaded or recorded, then decoded with the Web Audio API.
+2. `OfflineAudioContext` applies a high-pass and a low-pass biquad filter.
+3. An adaptive noise gate (`gateChannels` in `lib/audio.ts`) attenuates quiet, noise-floor sections with smoothed gain.
+4. Optional peak normalization (−1 dBFS), then export as 16-bit PCM WAV.
+5. Test mode mixes a user-supplied noise recording into speech at an adjustable level, clearly labelled as simulated.
 
-- **WAV Audio Upload**: Upload mono or stereo WAV files directly through an intuitive web interface.
-- **Instant Synthetic Demo Generator**: Synthesize a test transmission mixing voice formants with helicopter rotor drone and radio static with one click—no external audio files required.
-- **Genuine Noise Reduction**: Uses real spectral gating (`noisereduce`) with a reliable Scipy DSP bandpass fallback.
-- **Side-by-Side Audio Comparison**: Listen to the original noisy signal and the cleaned output side-by-side.
-- **Real Execution Metrics**: Accurately measures audio duration, processing execution time, and real-time factor (RTF).
-- **Downloadable Cleaned Audio**: Export processed audio directly as 16-bit PCM WAV.
+No metrics such as PESQ or STOI are shown, because none are computed.
 
----
+## Architecture
+- `app/page.tsx`: client-side UI (upload, record, settings, comparison, download)
+- `lib/audio.ts`: decoding, noise mixing, filtering, gate, normalization, WAV encoding
+- `components/Waveform.tsx`: canvas waveform view
 
-## 🔬 Honest Project Status & Disclosure
+## Stack
+Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS 3, Web Audio API.
 
-- **Stage**: Hackathon prototype & proof-of-concept.
-- **Algorithm**: Adaptive non-stationary and stationary spectral gating implemented via Python's `noisereduce` library, backed by Scipy.
-- **No Faked Claims**: We do not simulate or fake AI processing, benchmark scores, or military field tests. All execution times and audio outputs are genuine.
-
----
-
-## 🚀 Quickstart
-
-### 1. Prerequisites
-- Python 3.10+ (tested on Python 3.12)
-- Git
-
-### 2. Installation
-
-Clone this repository and install the dependencies:
-
+## Run locally
+Requires Node.js 18.18 or newer.
 ```bash
-git clone https://github.com/your-username/voxshield.git
-cd voxshield
-pip install -r requirements.txt
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # production build
 ```
 
-### 3. Launch Web App
+## Deploy on Vercel
+1. Push this repo to GitHub.
+2. In Vercel choose **Add New → Project**, import the repo, keep the defaults (Framework: Next.js) and select **Deploy**. No environment variables are needed.
 
-Start the Streamlit interface:
+## Limitations
+- Filters can distort speech where noise overlaps speech frequencies.
+- Loud, sustained noise (sirens, gunfire, rotors) will largely remain.
+- Whole-file offline processing only; no real-time or radio integration.
+- Browser codec support varies; WAV is the safest input.
 
-```bash
-streamlit run app.py
-```
+## Future work
+- Integrate a trained speech-enhancement model (for example, an ONNX model running in the browser) behind the existing `enhance()` interface.
+- Evaluate on public noisy-speech datasets with proper metrics and listening tests.
+- Real-time streaming input and user testing.
 
-The app will open automatically in your browser at `http://localhost:8501`.
+## AI disclosure
+This project was developed with the assistance of AI coding tools.
 
----
-
-## 🧪 Running Tests
-
-A full suite of unit tests validates audio loading, saving, noise cleaning, multichannel handling, and fallback behavior:
-
-```bash
-pytest
-```
-
----
-
-## 📁 Repository Structure
-
-```
-voxshield/
-├── voxshield/
-│   ├── __init__.py       # Package definition
-│   └── cleaner.py        # Real noise-reduction logic and metrics
-├── tests/
-│   ├── __init__.py
-│   └── test_cleaner.py   # Pytest suite
-├── app.py                # Streamlit web application
-├── requirements.txt      # Dependency specification
-├── LICENSE               # MIT License
-├── .gitignore            # Git exclusion rules
-└── README.md             # Project documentation
-```
-
----
-
-## 👥 Organization & Contact
-VoxShield Open Source Initiative — Focus: First Responder & Defence Radio Comms.
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+## Licence
+MIT, see `LICENSE`.
