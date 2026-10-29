@@ -84,11 +84,8 @@ voxshield/
 
 ---
 
-## 👥 Team VoxShield
-
-- **B. Shanjeev** (Data & Benchmark Pipeline)
-- **R. Sachin** (Model & Training)
-- **K. Vasanthan** (Hardware, Testing & Evaluation)
+## 👥 Organization & Contact
+VoxShield Open Source Initiative — Focus: First Responder & Defence Radio Comms.
 
 ---
 

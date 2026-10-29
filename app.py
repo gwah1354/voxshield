@@ -52,11 +52,9 @@ is_stationary = "Stationary" in noise_mode
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    "**Team VoxShield**\n"
-    "- B. Shanjeev\n"
-    "- R. Sachin\n"
-    "- K. Vasanthan\n\n"
-    "Focus: First Responder & Defence Radio Comms"
+    "**VoxShield Project**\n\n"
+    "Focus: First Responder & Defence Radio Comms\n\n"
+    "Stage: Proof of Concept Prototype"
 )
 
 # Audio Source Selection

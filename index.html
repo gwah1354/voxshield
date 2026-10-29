@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoxShield | Real-Time Speech Noise Reduction for Emergency & Tactical Comms</title>
+  <meta name="description" content="Adaptive audio noise reduction keeping voice communications intelligible through sirens, helicopter rotors, engine drones, and gunfire.">
+  <meta name="keywords" content="audio noise reduction, speech enhancement, tactical radio, first responders, DSP, emergency comms">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header / Hero Section -->
+    <header class="header">
+      <div class="brand-badge">
+        <span class="badge-dot"></span>
+        <span>VoxShield Prototype • Edge Audio DSP</span>
+      </div>
+      <h1 class="main-title">Every Word Heard.</h1>
+      <p class="tagline">Real-time speech noise filtering engineered for first responders and tactical communications in extreme acoustic environments.</p>
+
+      <div class="disclosure-card">
+        <strong>⚡ Hackathon Prototype Status:</strong> This application executes genuine digital signal processing (adaptive spectral gating and voice-intelligibility bandpass filtering). All latency metrics, audio durations, and real-time processing factors are calculated directly in real time without simulated numbers.
+      </div>
+    </header>
+
+    <!-- Main Studio Panel -->
+    <main class="studio-grid">
+      
+      <section class="glass-panel" aria-label="Audio Input and Controls">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span>🎙️</span> Audio Input & Noise Profile
+          </h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Step 1 of 2</span>
+        </div>
+
+        <!-- File Upload Dropzone -->
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload audio file dropzone">
+          <div class="dropzone-icon">📁</div>
+          <div class="dropzone-text">Drop a WAV file here, or click to browse</div>
+          <div class="dropzone-hint">Supports mono/stereo 16-bit or 32-bit WAV recordings</div>
+          <input type="file" id="fileInput" class="file-input" accept=".wav,audio/wav">
+        </div>
+
+        <!-- One-click Demo Sample Button -->
+        <div class="or-divider">
+          <span>OR QUICK DEMO</span>
+        </div>
+
+        <button type="button" class="btn btn-secondary" id="btnGenerateSample">
+          <span>⚡</span> Synthesize Tactical Rotor + Radio Noise Clip (3.2s)
+        </button>
+
+        <!-- Active File Info Banner -->
+        <div class="active-file-banner" id="activeFileBanner" style="display: none; margin-top: 1.25rem;">
+          <div class="file-info">
+            <span>🎧</span>
+            <div>
+              <strong id="activeFileName">Sample</strong>
+              <div id="activeFileMeta" style="font-size: 0.78rem; color: var(--text-secondary);">3.2s • 16000 Hz</div>
+            </div>
+          </div>
+          <span class="badge-tag clean">Loaded</span>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="controls-grid">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Noise Reduction Intensity</span>
+              <span class="control-value" id="strengthValue">85%</span>
+            </div>
+            <input type="range" class="slider" id="strengthSlider" min="0.20" max="1.00" step="0.05" value="0.85" aria-label="Noise reduction intensity">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem;">
+              <span>Subtle (20%)</span>
+              <span>Balanced (85%)</span>
+              <span>Aggressive (100%)</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Acoustic Profile</span>
+            </div>
+            <select class="select-input" id="modeSelect" aria-label="Noise environment acoustic profile">
+              <option value="adaptive" selected>Adaptive Non-Stationary (Rotors, Sirens, Blasts)</option>
+              <option value="stationary">Stationary (Constant Engine / Cabin Drone)</option>
+            </select>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem;">
+              Optimizes dynamic spectral thresholds for erratic vs steady background noise.
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button type="button" class="btn btn-primary" id="btnProcess" disabled>
+          <span class="spinner" id="processSpinner" style="display: none;"></span>
+          <span id="processBtnText">🛡️ Shield & Clean Audio</span>
+        </button>
+
+      </section>
+
+      <!-- Audio Comparison & Visualizer Results -->
+      <section class="glass-panel" id="resultsSection" style="display: none;" aria-label="Audio Output Comparison">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span>📊</span> Audio Waveform Comparison
+          </h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Step 2 of 2</span>
+        </div>
+
+        <div class="comparison-container">
+          <!-- Original Audio Card -->
+          <div class="audio-card">
+            <div class="audio-header">
+              <span class="audio-title">🔴 Original Transmission</span>
+              <span class="badge-tag noisy">Noisy Input</span>
+            </div>
+            <canvas id="canvasOriginal" class="waveform-canvas" width="400" height="80"></canvas>
+            <audio id="audioOriginal" controls aria-label="Original noisy audio"></audio>
+          </div>
+
+          <!-- Processed Audio Card -->
+          <div class="audio-card processed">
+            <div class="audio-header">
+              <span class="audio-title">🟢 Cleaned Transmission</span>
+              <span class="badge-tag clean">VoxShield Filtered</span>
+            </div>
+            <canvas id="canvasProcessed" class="waveform-canvas" width="400" height="80"></canvas>
+            <audio id="audioProcessed" controls aria-label="Cleaned processed audio"></audio>
+            
+            <a id="btnDownload" class="btn btn-success" style="display: none; margin-top: 0.5rem;" download="voxshield_cleaned.wav">
+              <span>⬇️</span> Download Cleaned WAV
+            </a>
+          </div>
+        </div>
+
+        <!-- Telemetry Performance Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Audio Duration</div>
+            <div class="metric-value" id="metricDuration">--</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Processing Time</div>
+            <div class="metric-value highlight" id="metricLatency">--</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Real-Time Factor</div>
+            <div class="metric-value success" id="metricRtf">--</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Processing Mode</div>
+            <div class="metric-value" id="metricAlgorithm" style="font-size: 0.85rem; padding-top: 0.35rem;">Spectral Gating</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Architecture Highlights -->
+      <section class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">Ultra-Low Latency</h3>
+          <p class="feature-desc">Engineered for immediate edge deployment with sub-second execution factors, eliminating communication lag during high-stress operations.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon">🚁</div>
+          <h3 class="feature-title">Heavy Noise Suppression</h3>
+          <p class="feature-desc">Formulated to attenuate impulsive gunshots, low-frequency helicopter rotor slap, heavy diesel engines, and siren wails without clipping voice formants.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon">🔒</div>
+          <h3 class="feature-title">Zero-Cloud Security</h3>
+          <p class="feature-desc">Audio is processed locally on the client or edge device. No sensitive mission transmissions, commands, or coordinates leave your device.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>VoxShield — Open-Source Tactical & Emergency Audio Enhancement Prototype.</p>
+      <p style="margin-top: 0.35rem;">Licensed under the <a href="LICENSE">MIT License</a>. Prepared for Vercel deployment.</p>
+    </footer>
+
+  </div>
+
+  <script src="js/dsp.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
